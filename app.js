@@ -1,8 +1,9 @@
 const { createVNode, appState } = require("./vdom")
 const Title = require("./components/title")
 const Gallery = require("./components/gallery")
+const Button = require("./components/button")
 
-const App = (initialNumImages = 3) => {
+const App = ({ initialNumImages = 3 } = {}) => {
   const { getState, setState } = appState
   const numImages = getState().numImages
 
@@ -32,32 +33,26 @@ const App = (initialNumImages = 3) => {
       id: "app"
     },
     [
-      Title(),
+      Title({ text: "Image Gallery" }),
       createVNode(
         "div",
         {
           id: "controls"
         },
         [
-          createVNode(
-            "button",
-            {
-              onClick: increaseImages,
-              ...(numImages === 8 && { disabled: true })
-            },
-            ["Add 1 images"]
-          ),
-          createVNode(
-            "button",
-            {
-              onClick: decreaseImages,
-              ...(numImages === 0 && { disabled: true })
-            },
-            ["Remove 1 images"]
-          ),
+          Button({
+            text: "Add 1 images",
+            onClick: increaseImages,
+            disabled: numImages === 8
+          }),
+          Button({
+            text: "Remove 1 images",
+            onClick: decreaseImages,
+            disabled: numImages === 0
+          }),
         ]
       ),
-      Gallery(numImages)
+      Gallery({ numImages })
     ]
   )
 }

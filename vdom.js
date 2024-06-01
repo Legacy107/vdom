@@ -72,13 +72,6 @@ function createApp(element) {
 
   if (children?.length) {
     children.forEach(child => {
-      if (typeof child === "function") {
-        child = child()
-      }
-      if (typeof child === "string") {
-        el.appendChild(document.createTextNode(child))
-        return
-      }
       childApp = createApp(child)
       el.appendChild(childApp)
     })
@@ -233,7 +226,6 @@ function diffChildrenWithReordering(oldChildren, newChildren) {
       // example
       // old: 5 1 2 3 4
       // new: 0 2 3 4 1
-      // remove 5 and append it to the end
       patches.push((element) => {
         for (let i = 0; i < startIdxOld - startIdxNew; i++) {
           ++window.nodeMoved
@@ -244,12 +236,10 @@ function diffChildrenWithReordering(oldChildren, newChildren) {
 
         return element
       })
-
     } else if (startIdxOld < startIdxNew) {
       // example
       // old: 1 2 3 4 5 6
       // new: 5 0 1 2 3 4
-      // remove 5 and prepend it to the beginning
       patches.push((element) => {
         for (let i = 0; i < startIdxNew - startIdxOld; i++) {
           ++window.nodeMoved
@@ -342,16 +332,16 @@ const appState = (function () {
   let listeners = []
 
   /**
-   * Adds a listener function to be called when the state changes.
-   * @param {Function} listener - The listener function to be added.
-   */
-  const addListener = (listener) => listeners.push(listener)
-
-  /**
    * Retrieves the current state.
    * @returns {Object} The current state.
    */
   const getState = () => state
+
+  /**
+   * Adds a listener function to be called when the state changes.
+   * @param {Function} listener - The listener function to be added.
+   */
+  const addListener = (listener) => listeners.push(listener)
 
   /**
    * Updates the state with the provided new state.

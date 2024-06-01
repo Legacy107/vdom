@@ -1,7 +1,16 @@
 const { RENDER_FLAG, createVNode, appState } = require("../vdom")
 const Image = require("./image")
+const Button = require("./button")
 
-const Gallery = (numImage = 3) => {
+/**
+ * A carousel gallery component.
+ *
+ * @param {Object} props - The properties for the gallery component.
+ * @param {number} [props.numImages=3] - The number of images to display in the gallery.
+ * @param {string} props.key - The unique key of the component.
+ * @returns {VNode} The virtual DOM node representing the gallery component.
+ */
+const Gallery = ({ numImages = 3, key } = {}) => {
   // a carousel gallery
   let position = appState.getState().position
   if (position === undefined) {
@@ -22,8 +31,8 @@ const Gallery = (numImage = 3) => {
   }
 
   // rotate images based on position
-  const images = Array.from({ length: numImage }).map((_, idx) => {
-    const imageIdx = ((idx + position) % numImage + 1)
+  const images = Array.from({ length: numImages }).map((_, idx) => {
+    const imageIdx = ((idx + position) % numImages + 1)
     return Image({
       key: "image-" + imageIdx,
       src: "https://picsum.photos/200/200?id=" + imageIdx
@@ -35,16 +44,13 @@ const Gallery = (numImage = 3) => {
     {
       id: "gallery",
       style: "display: flex; justify-content: space-around;",
+      ...(key && { key }),
     },
     [
-      createVNode(
-        "button",
-        {
-          id: "back",
-          onClick: handleBack,
-        },
-        ["<"]
-      ),
+      Button({
+        text: "<",
+        onClick: handleBack,
+      }),
       createVNode(
         "div",
         {
@@ -56,14 +62,10 @@ const Gallery = (numImage = 3) => {
         ],
         RENDER_FLAG.NORMAL | RENDER_FLAG.REORDER
       ),
-      createVNode(
-        "button",
-        {
-          id: "next",
-          onClick: handleNext,
-        },
-        [">"]
-      ),
+      Button({
+        text: ">",
+        onClick: handleNext,
+      }),
     ]
   )
 }
